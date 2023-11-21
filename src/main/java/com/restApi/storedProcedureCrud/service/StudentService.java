@@ -27,7 +27,7 @@ public class StudentService{
 	
 	
 
-	public void createStudent(long id, String name, String city, int salary) {
+	public Student createStudent(Student student, Long id, String city, String name, int salary ) {
         System.out.println("Service is called");
         StoredProcedureQuery query = em.createNamedStoredProcedureQuery("createStudent")
                 .setParameter("id", id)
@@ -36,6 +36,7 @@ public class StudentService{
                 .setParameter("salary", salary);
 
         query.execute();
+		return studentDao.save(student);
         
     }
 	
@@ -62,16 +63,23 @@ public class StudentService{
 	    }
 
 
-	public void deleteStudent(long id) {
+	 @Transactional
+	public int deleteStudent(long id) {
 		
 		   StoredProcedureQuery query = em
 	        		.createNamedStoredProcedureQuery("deleteStudent")
 	                .setParameter("id", id);
+		   query.execute();
 	        
-	        query.execute();
-	        studentDao.deleteById(id);
+		   int rowsAffectedProcedure =  query.executeUpdate();
+	       studentDao.deleteById(id);
+	       
+	      return rowsAffectedProcedure;
 
 	}
+	 
+	 
+	 
 
 	@Transactional
     public Student updateStudent(Long id, String name, String city, int salary) {
